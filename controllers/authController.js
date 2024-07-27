@@ -18,7 +18,7 @@ exports.register = async (req, res) => {
         user.password = await bcrypt.hash(password, salt);
 
         await user.save();
-
+        console.log(`User added`);
         const payload = { user: { id: user.id } };
 
         jwt.sign(

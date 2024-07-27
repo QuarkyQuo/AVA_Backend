@@ -1,4 +1,7 @@
 const express = require('express');
+const cors = require('cors');
+
+
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
@@ -10,6 +13,13 @@ const app = express();
 // Connect Database
 connectDB();
 
+//cors middleware
+const corsOptions = {
+    origin: '*', // Allow all origins. For production, specify your domain.
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, x-auth-token'
+};
+app.use(cors(corsOptions));
 // Init Middleware
 app.use(express.json({ extended: false }));
 
