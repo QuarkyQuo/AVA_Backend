@@ -110,7 +110,7 @@ This project is a Node.js application with JWT authentication and MongoDB for st
 - **Request Body:**
   ```json
   {
-      "userId": "user_id_here"
+      "Optional Meta data": "This payload is optional. Doesn't effect the api call."
   }
   ```
 - **Expected Response:**
@@ -174,6 +174,33 @@ This project is a Node.js application with JWT authentication and MongoDB for st
       "msg": "Prompt modified"
   }
   ```
+#### 8. Get All Data for a Specific Chat Session
+
+- **Endpoint:** `GET /api/chat/:sessionId`
+- **Description:** Retrieve all data for a specific chat session, including prompts and their associated responses.
+- **Headers:** `x-auth-token: your_jwt_token_here`
+- **Request Params:** 
+  - `sessionId`: The ID of the chat session you want to retrieve.
+- **Expected Response:**
+  ```json
+  {
+      "_id": "chat_session_id_here",
+      "userId": "user_id_here",
+      "prompts": [
+          {
+              "_id": "prompt_id_here",
+              "prompt": "your_prompt_here",
+              "responses": [
+                  {
+                      "_id": "response_id_here",
+                      "response": "response_text_here"
+                  }
+              ]
+          }
+      ],
+      "createdAt": "2024-08-16T10:00:00Z",
+      "updatedAt": "2024-08-16T10:05:00Z"
+  }
 
 ## Using Postman for API Testing
 

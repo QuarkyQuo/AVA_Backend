@@ -78,3 +78,22 @@ exports.modifyPrompt = async (req, res) => {
     }
 };
 
+exports.getChatSessionData = async (req, res) => {
+    try {
+        const chatSessionId = req.params.sessionId;
+
+        // Find the chat session by its ID
+        const chatSession = await ChatSession.findById(chatSessionId)
+            .populate('prompts.responses') //populates the responses instead of ids
+            .populate('prompts');
+
+        if (!chatSession) {
+            return res.status(404).json({ msg: 'Chat session not found' });
+        }
+
+        res.json(chatSession);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
