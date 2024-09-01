@@ -95,7 +95,9 @@ This project is a Node.js application with JWT authentication and MongoDB for st
       "chatSessions": [
           {
               "_id": "chat_session_id_here",
-              "userId": "user_id_here",
+              "sessionId": "user_id_here",
+              "name": "Session_name_here",
+              "image": "url/color_code"
               // other chat session fields...
           }
       ]
@@ -110,13 +112,16 @@ This project is a Node.js application with JWT authentication and MongoDB for st
 - **Request Body:**
   ```json
   {
-      "Optional Meta data": "This payload is optional. Doesn't effect the api call."
+      "name": "session name",
+      "image":"url/colorCode"
   }
   ```
 - **Expected Response:**
   ```json
   {
-      "chatSessionId": "chat_session_id_here"
+      "chatSessionId": "chat_session_id_here",
+      "name": "session name",
+      "image":"url/colorCode"
   }
   ```
 
@@ -135,29 +140,12 @@ This project is a Node.js application with JWT authentication and MongoDB for st
 - **Expected Response:**
   ```json
   {
-      "msg": "Prompt added"
+      "responses": "['AI generated response',...other_responses]"
   }
   ```
 
-#### 6. Add Response to Prompt
 
-- **Endpoint:** `POST /api/chat/:sessionId/prompt/:promptId/response`
-- **Description:** Add a response to an existing prompt in a chat session.
-- **Headers:** `Content-Type: application/json`, `x-auth-token: your_jwt_token_here`
-- **Request Body:**
-  ```json
-  {
-      "response": "your_response_here"
-  }
-  ```
-- **Expected Response:**
-  ```json
-  {
-      "msg": "Response added"
-  }
-  ```
-
-#### 7. Modify Prompt
+#### 6. Modify Prompt
 
 - **Endpoint:** `PUT /api/chat/:sessionId/prompt/:promptId`
 - **Description:** Modify an existing prompt in a chat session.
@@ -174,7 +162,7 @@ This project is a Node.js application with JWT authentication and MongoDB for st
       "msg": "Prompt modified"
   }
   ```
-#### 8. Get All Data for a Specific Chat Session
+#### 7. Get All Data for a Specific Chat Session
 
 - **Endpoint:** `GET /api/chat/:sessionId`
 - **Description:** Retrieve all data for a specific chat session, including prompts and their associated responses.

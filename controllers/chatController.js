@@ -1,11 +1,13 @@
 const ChatSession = require('../models/ChatSession');
 const User = require('../models/User');
+const { promptResponse } = require('../services/chatService');
 
 exports.createChatSession = async (req, res) => {
     const userId  = req.user.id;
+    const { name, image } = req.body;
 
     try {
-        const newChatSession = new ChatSession({ user: userId });
+        const newChatSession = new ChatSession({ name:name ,user: userId,image:image });
         const chatSession = await newChatSession.save();
 
         // Update user to include this chat session
@@ -14,10 +16,10 @@ exports.createChatSession = async (req, res) => {
             return res.status(404).json({ msg: 'User not found' });
         }
 
-        user.chatSessions.push(chatSession.id);
+        user.chatSessions.push({name,image,sessionId:chatSession.id});
         await user.save();
 
-        res.json({ chatSessionId: chatSession._id });
+        res.json({ chatSessionId: chatSession._id,name,image });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
@@ -27,35 +29,48 @@ exports.createChatSession = async (req, res) => {
 exports.addPrompt = async (req, res) => {
     const { sessionId } = req.params;
     const { promptId, prompt } = req.body;
-
+    
     try {
         const chatSession = await ChatSession.findById(sessionId);
-        console.log(chatSession)
-        chatSession.prompts.push({ promptId, prompt, responses: [] });
+    
+        // Check if the prompt already exists in the session
+        const existingPrompt = chatSession.prompts.find(p => p.promptId === promptId);
+    
+        const responsesOut = await addResponse(sessionId, promptId, prompt);
+    
+        if (existingPrompt) {
+            // If the prompt exists, just push the response
+            existingPrompt.responses.push(...responsesOut);
+        } else {
+            // If the prompt doesn't exist, create a new prompt with the response
+            chatSession.prompts.push({ promptId, prompt, responses: [...responsesOut] });
+        }
+    
         await chatSession.save();
-        res.json({ promptId, prompt });
+    
+        res.json({ responses: responsesOut });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
     }
 };
 
-exports.addResponse = async (req, res) => {
-    const { sessionId, promptId } = req.params;
-    const { response } = req.body;
+const addResponse = async (sessionId, promptId,prompt) => {
 
     try {
-        const chatSession = await ChatSession.findById(sessionId);
-        const prompt = chatSession.prompts.find(p => p.promptId === promptId);
-        if (!prompt) {
-            return res.status(404).json({ msg: 'Prompt not found' });
+
+        const msgData={
+            _id: sessionId,
+            prompt_details: {
+                promptId: promptId,
+                prompt: prompt,
+            },
         }
-        prompt.responses.push(response);
-        await chatSession.save();
-        res.json({ msg: 'Response added' });
+        let responses= await promptResponse(msgData)
+        return responses;
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server error');
+
     }
 };
 

@@ -1,6 +1,14 @@
 const mongoose = require('mongoose');
 
 const ChatSessionSchema = new mongoose.Schema({
+    name:{
+        type: String,
+        required: true,
+    },
+    image:{
+        type: String,
+        required: true,
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -18,7 +26,11 @@ const ChatSessionSchema = new mongoose.Schema({
         responses: [{
             type: String,
             required: true,
-        }]
+        }],
+        createdAt: {
+        type: Date,
+        default: Date.now,
+    }
     }],
     createdAt: {
         type: Date,
